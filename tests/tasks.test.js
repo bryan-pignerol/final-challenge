@@ -37,6 +37,29 @@ test('GET /tasks returns tasks', async () => {
   assert.ok(body.length > 0);
 });
 
+test('GET /tasks?status=todo returns only todo tasks', async () => {
+  const { response, body } = await request('/tasks?status=todo');
+
+  assert.equal(response.status, 200);
+  assert.ok(Array.isArray(body));
+  assert.ok(body.length > 0);
+  assert.ok(body.every((task) => task.status === 'todo'));
+});
+
+test('GET /tasks?status=done returns only done tasks', async () => {
+  const { response, body } = await request('/tasks?status=done');
+
+  assert.equal(response.status, 200);
+  assert.ok(body.every((task) => task.status === 'done'));
+});
+
+test('GET /tasks with an invalid status returns 400', async () => {
+  const { response, body } = await request('/tasks?status=archived');
+
+  assert.equal(response.status, 400);
+  assert.match(body.error, /Invalid status/);
+});
+
 test('GET /tasks/:id returns 404 for an unknown task', async () => {
   const { response, body } = await request('/tasks/999999');
 
