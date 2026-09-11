@@ -96,6 +96,18 @@ app.patch('/tasks/:id', (req, res) => {
     return res.status(404).json({ error: 'Task not found' });
   }
 
+  const allowedFields = ['title', 'description', 'status'];
+  const keys = Object.keys(req.body);
+
+  if (keys.length === 0) {
+    return res.status(400).json({ error: 'No fields provided to update' });
+  }
+
+  const hasInvalidKey = keys.some((key) => !allowedFields.includes(key));
+  if (hasInvalidKey) {
+    return res.status(400).json({ error: 'Invalid request structure' });
+  }
+
   const { title, description, status } = req.body;
 
   if (status !== undefined && !VALID_STATUSES.includes(status)) {
@@ -105,7 +117,25 @@ app.patch('/tasks/:id', (req, res) => {
   }
 
   if (title !== undefined) {
-    task.title = title;
+    if (typeof title !== 'string' || title.trim() === '') {
+      return res.status(400).json({ error: 'Invalid title' });
+    }
+  }
+
+  if (description !== undefined) {
+    if (typeof description !== 'string') {
+      return res.status(400).json({ error: 'Invalid description' });
+    }
+  }
+
+  if (status !== undefined) {
+    if (!VALID_STATUSES.includes(status)) {
+      return res.status(400).json({ error: `Invalid task status. Must be one of: ${VALID_STATUSES.join(', ')}` });
+    }
+  }
+
+  if (title !== undefined) {
+    task.title = title.trim();
   }
   if (description !== undefined) {
     task.description = description;
