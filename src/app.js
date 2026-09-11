@@ -78,6 +78,28 @@ app.post('/tasks', (req, res) => {
   return res.status(201).json(task);
 });
 
+app.patch('/tasks/:id', (req, res) => {
+  const task = tasks.find((item) => item.id === Number(req.params.id));
+
+  if (!task) {
+    return res.status(404).json({ error: 'Task not found' });
+  }
+
+  const { title, description, status } = req.body;
+
+  if (title !== undefined) {
+    task.title = title;
+  }
+  if (description !== undefined) {
+    task.description = description;
+  }
+  if (status !== undefined) {
+    task.status = status;
+  }
+
+  return res.json(task);
+});
+
 if (require.main === module) {
   const port = process.env.PORT || 3000;
 
