@@ -1,4 +1,5 @@
 const express = require('express');
+const config = require('./config');
 
 const app = express();
 app.use(express.json());
@@ -149,11 +150,10 @@ app.patch('/tasks/:id', (req, res) => {
 
 
 if (require.main === module) {
-  const port = process.env.PORT || 3000;
-
-  app.listen(port, () => {
-    console.log(`Task API listening on port ${port}`);
+  app.listen(config.port, () => {
+    console.log(`Task API listening on port ${config.port} (${config.nodeEnv})`);
   });
 }
+
 
 module.exports = { app };
