@@ -15,7 +15,7 @@ async function request(path, options = {}) {
       ...options
     });
 
-    const body = await response.json();
+    const body = response.status === 204 ? null : await response.json();
     return { response, body };
   } finally {
     server.close();
@@ -67,6 +67,8 @@ test('GET /tasks/:id returns 404 for an unknown task', async () => {
   assert.equal(body.error, 'Task not found');
 });
 
+
+
 test('PATCH /tasks/:id updates an existing task', async () => {
   const updates = {
     title: 'Updated title',
@@ -90,6 +92,24 @@ test('PATCH /tasks/:id returns 404 for an unknown task', async () => {
   const { response, body } = await request('/tasks/999999', {
     method: 'PATCH',
     body: JSON.stringify({ title: 'New title' })
+  });
+
+  assert.equal(response.status, 404);
+  assert.equal(body.error, 'Task not found');
+});
+
+test('DELETE /tasks/:id deletes an existing task', async () => {
+  const { response } = await request('/tasks/3', {
+    method: 'DELETE'
+  });
+
+  assert.equal(response.status, 204);
+  assert.equal(await response.text(), '');
+});
+
+test('DELETE /tasks/:id returns 404 for an unknown task', async () => {
+  const { response, body } = await request('/tasks/999999', {
+    method: 'DELETE'
   });
 
   assert.equal(response.status, 404);
