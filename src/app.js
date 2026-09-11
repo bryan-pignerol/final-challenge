@@ -98,6 +98,12 @@ app.patch('/tasks/:id', (req, res) => {
 
   const { title, description, status } = req.body;
 
+  if (status !== undefined && !VALID_STATUSES.includes(status)) {
+    return res.status(400).json({
+      error: `Invalid task status. Must be one of: ${VALID_STATUSES.join(', ')}`
+    });
+  }
+
   if (title !== undefined) {
     task.title = title;
   }
@@ -110,6 +116,7 @@ app.patch('/tasks/:id', (req, res) => {
 
   return res.json(task);
 });
+
 
 if (require.main === module) {
   const port = process.env.PORT || 3000;
