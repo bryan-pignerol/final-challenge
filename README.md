@@ -15,6 +15,24 @@ Starter project for the GitHub + Actions + Docker final challenge.
 npm install
 ```
 
+## Configuration
+
+The app is configured via environment variables, with sensible defaults for
+local development so it runs out of the box. Copy `.env.example` to `.env` and
+adjust as needed:
+
+```bash
+cp .env.example .env
+```
+
+| Variable   | Description                                                      | Default       |
+|------------|--------------------------------------------------------------------|---------------|
+| `PORT`     | Port the API listens on                                            | `3000`        |
+| `NODE_ENV` | Runtime environment (`development`, `production`, `test`, ...)     | `development` |
+
+`.env` is git-ignored — never commit it or any other file containing secrets.
+Only `.env.example` (with placeholder, non-sensitive values) is tracked.
+
 ## Run locally
 
 ```bash
