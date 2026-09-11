@@ -44,6 +44,17 @@ app.get('/tasks/:id', (req, res) => {
   return res.json(task);
 });
 
+app.delete('/tasks/:id', (req, res) => {
+  const taskIndex = tasks.findIndex((item) => item.id === Number(req.params.id));
+
+  if (taskIndex === -1) {
+    return res.status(404).json({ error: 'Task not found' });
+  }
+
+  tasks.splice(taskIndex, 1);
+  return res.status(204).send();
+});
+
 app.post('/tasks', (req, res) => {
   const { title, description, status = 'todo' } = req.body;
 
