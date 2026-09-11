@@ -24,6 +24,8 @@ let tasks = [
   }
 ];
 
+const VALID_STATUSES = ['todo', 'in-progress', 'done'];
+
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok'
@@ -31,8 +33,22 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/tasks', (req, res) => {
-  res.json(tasks);
+  const { status } = req.query;
+
+  if (status === undefined) {
+    return res.json(tasks);
+  }
+
+  if (!VALID_STATUSES.includes(status)) {
+    return res.status(400).json({
+      error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`
+    });
+  }
+
+  const filteredTasks = tasks.filter((task) => task.status === status);
+  return res.json(filteredTasks);
 });
+
 
 app.get('/tasks/:id', (req, res) => {
   const task = tasks.find((item) => item.id === Number(req.params.id));
@@ -57,6 +73,10 @@ app.delete('/tasks/:id', (req, res) => {
 
 app.post('/tasks', (req, res) => {
   const { title, description, status = 'todo' } = req.body;
+
+  if (!VALID_STATUSES.includes(status)) {
+    return res.status(400).json({ error: `Invalid task status. Must be one of: ${VALID_STATUSES.join(', ')}` });
+  }
 
   const task = {
     id: tasks.length ? Math.max(...tasks.map((item) => item.id)) + 1 : 1,
