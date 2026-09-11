@@ -110,6 +110,51 @@ test('PATCH /tasks/:id does not partially update on invalid status', async () =>
   assert.equal(after.body.title, before.body.title);
 });
 
+test('PATCH /tasks/:id returns 400 for an empty body', async () => {
+  const { response, body } = await request('/tasks/1', {
+    method: 'PATCH',
+    body: JSON.stringify({})
+  });
+
+  assert.equal(response.status, 400);
+  assert.equal(body.error, 'No fields provided to update');
+});
+
+test('PATCH /tasks/:id returns 400 for unknown fields', async () => {
+  const { response, body } = await request('/tasks/1', {
+    method: 'PATCH',
+    body: JSON.stringify({ title: 'New title', admin: true })
+  });
+
+  assert.equal(response.status, 400);
+  assert.equal(body.error, 'Invalid request structure');
+});
+
+test('PATCH /tasks/:id returns 400 for an invalid title type or empty title', async () => {
+  const resNumber = await request('/tasks/1', {
+    method: 'PATCH',
+    body: JSON.stringify({ title: 123 })
+  });
+  assert.equal(resNumber.response.status, 400);
+  assert.equal(resNumber.body.error, 'Invalid title');
+
+  const resEmpty = await request('/tasks/1', {
+    method: 'PATCH',
+    body: JSON.stringify({ title: '   ' })
+  });
+  assert.equal(resEmpty.response.status, 400);
+  assert.equal(resEmpty.body.error, 'Invalid title');
+});
+
+test('PATCH /tasks/:id returns 400 for an invalid description type', async () => {
+  const { response, body } = await request('/tasks/1', {
+    method: 'PATCH',
+    body: JSON.stringify({ description: 123 })
+  });
+
+  assert.equal(response.status, 400);
+  assert.equal(body.error, 'Invalid description');
+});
 
 test('PATCH /tasks/:id returns 404 for an unknown task', async () => {
   const { response, body } = await request('/tasks/999999', {
