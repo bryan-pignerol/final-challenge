@@ -43,3 +43,32 @@ test('GET /tasks/:id returns 404 for an unknown task', async () => {
   assert.equal(response.status, 404);
   assert.equal(body.error, 'Task not found');
 });
+
+test('PATCH /tasks/:id updates an existing task', async () => {
+  const updates = {
+    title: 'Updated title',
+    status: 'done'
+  };
+
+  const { response, body } = await request('/tasks/1', {
+    method: 'PATCH',
+    body: JSON.stringify(updates)
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(body.id, 1);
+  assert.equal(body.title, updates.title);
+  assert.equal(body.status, updates.status);
+  // La description non fournie doit rester inchangée
+  assert.equal(body.description, 'Finish the slides');
+});
+
+test('PATCH /tasks/:id returns 404 for an unknown task', async () => {
+  const { response, body } = await request('/tasks/999999', {
+    method: 'PATCH',
+    body: JSON.stringify({ title: 'New title' })
+  });
+
+  assert.equal(response.status, 404);
+  assert.equal(body.error, 'Task not found');
+});
