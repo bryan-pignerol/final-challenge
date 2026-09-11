@@ -1,4 +1,10 @@
-# Bug: <one line — what breaks, where, under what condition>
+---
+name: Bug Report
+about: Report a bug
+title: '[BUG]'
+labels: 'bug, security'
+assignees: ''
+---
 
 ## Summary
 Two or three sentences: what happens, who it affects, why it matters.
