@@ -1,6 +1,7 @@
 # Dependency directories
 node_modules/
 jspm_packages/
+package-lock.json
 
 # Optional npm cache directory
 .npm
@@ -9,6 +10,3 @@ jspm_packages/
 .env
 .env.*
 !.env.example
-
-
-.vite/
