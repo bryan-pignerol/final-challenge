@@ -86,6 +86,29 @@ test('PATCH /tasks/:id updates an existing task', async () => {
   assert.equal(body.description, 'Finish the slides');
 });
 
+test('PATCH /tasks/:id rejects an invalid status', async () => {
+  const { response, body } = await request('/tasks/1', {
+    method: 'PATCH',
+    body: JSON.stringify({ status: 'archived' })
+  });
+
+  assert.equal(response.status, 400);
+  assert.match(body.error, /Invalid task status/);
+});
+
+test('PATCH /tasks/:id does not partially update on invalid status', async () => {
+  const before = await request('/tasks/1');
+
+  await request('/tasks/1', {
+    method: 'PATCH',
+    body: JSON.stringify({ title: 'Should not apply', status: 'archived' })
+  });
+
+  const after = await request('/tasks/1');
+  assert.equal(after.body.title, before.body.title);
+});
+
+
 test('PATCH /tasks/:id returns 404 for an unknown task', async () => {
   const { response, body } = await request('/tasks/999999', {
     method: 'PATCH',
